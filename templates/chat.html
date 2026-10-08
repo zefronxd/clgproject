@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Chat check-in · MindTrack{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='chat.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<section
+  class="chat-page"
+  id="chat-app"
+  data-chat-key="mindtrack-chat-{{ active_user.id }}"
+  data-csrf="{{ csrf_token }}"
+>
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">A MOMENT FOR YOU</span>
+      <h1>Talk it through.</h1>
+      <p>A gentle space to check in with yourself, one message at a time.</p>
+    </div>
+  </header>
+
+  <section class="chat-panel" aria-label="Chat check-in">
+    <div class="chat-panel-heading">
+      <span class="chat-avatar" aria-hidden="true">m</span>
+      <div>
+        <strong>Your check-in companion</strong>
+        <span>Here to listen without judgment</span>
+      </div>
+      <span class="chat-presence"><i aria-hidden="true"></i> A quiet space</span>
+    </div>
+
+    <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-relevant="additions text">
+      <div class="chat-welcome" id="chat-welcome">
+        <span class="chat-welcome-mark" aria-hidden="true">✳</span>
+        <p>What’s on your mind today?</p>
+        <span>You can write in English, Hindi, or Hinglish.</span>
+      </div>
+    </div>
+
+    <form class="chat-compose" id="chat-form">
+      <label class="sr-only" for="chat-input">Your message</label>
+      <textarea
+        id="chat-input"
+        name="message"
+        maxlength="500"
+        rows="2"
+        placeholder="Write what’s on your mind…"
+        required
+      ></textarea>
+      <div class="chat-compose-footer">
+        <span class="chat-character-count" id="chat-character-count">0 / 500</span>
+        <span class="chat-status" id="chat-status" role="status" aria-live="polite"></span>
+        <button class="button button-primary chat-send" id="chat-send" type="submit">
+          <span>Send</span><span aria-hidden="true">↑</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <p class="chat-privacy-note">Chat messages are processed by an external AI service.</p>
+  <p class="chat-medical-note">MindTrack is not a medical tool and not a substitute for professional help.</p>
+</section>
+{% endblock %}

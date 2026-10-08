@@ -1,0 +1,10 @@
+Add a "Chat Check-in" feature to the existing MindTrack app. Do not change or break any existing feature (login, journal, history, dashboard). Make the change small.
+
+1. New page /chat (logged-in users only), linked in the navbar. Simple chat UI: message list, input box (max 500 characters), Send button.
+2. Backend route POST /api/chat that calls the Groq API (OpenAI-compatible endpoint https://api.groq.com/openai/v1/chat/completions) with the key from env var GROQ_API_KEY and model from env var GROQ_MODEL (default "openai/gpt-oss-120b"). Timeout 20 seconds. If the call fails or the key is missing, return a friendly message such as "Chat is unavailable right now" and do not crash.
+3. System prompt for the model: "You are MindTrack's supportive check-in companion. Reply in the user's language (English, Hindi or Hinglish), in 2-4 short sentences, in a warm and non-judgmental tone. You are not a therapist or doctor: never diagnose, never suggest medication, and never claim to replace professional help. Ask at most one gentle follow-up question. If the user seems to be in crisis, encourage contacting a trusted person or a helpline."
+4. SAFETY: before calling Groq, run the existing distress detection (the same keyword list and logic) on the user's message. If distress is detected, do NOT call the LLM: return the fixed support message plus the helplines from helplines.json (Tele-MANAS 14416 first).
+5. Send only the last 6 chat messages of the current session as context. Never send journal entries to the chat model.
+6. Do not store or log chat text (keep history only in the browser session). Add basic rate limiting (e.g. 20 messages per minute per user).
+7. Show on the chat page: "Chat messages are processed by an external AI service." and "MindTrack is not a medical tool and not a substitute for professional help."
+8. Update the README with the new env vars. Test: a normal message gets a reply; a message like "I feel hopeless and want to give up" returns the fixed helpline message without calling the LLM; and the app still works if GROQ_API_KEY is missing.

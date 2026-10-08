@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Insights · MindTrack{% endblock %}
+{% block head %}<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script><script defer src="{{ url_for('static', filename='dashboard.js') }}"></script>{% endblock %}
+{% block content %}
+<section class="page-heading dashboard-heading">
+  <div><span class="eyebrow">YOUR PATTERNS, AT A GLANCE</span><h1>Notice how you’ve been.</h1><p>These are reflections from your entries, not rules about how you should feel.</p></div>
+  <form class="range-toggle" method="get" action="{{ url_for('dashboard') }}" aria-label="Choose trend period"><button name="days" value="7" class="{% if days == 7 %}selected{% endif %}" type="submit">7 days</button><button name="days" value="30" class="{% if days == 30 %}selected{% endif %}" type="submit">30 days</button></form>
+</section>
+<section class="dashboard-stats">
+  <div class="stat-card"><span class="stat-icon stat-icon-lilac" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.75h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1Z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></span><span class="stat-label">Check-ins this period</span><strong>{{ entry_count }}</strong><small>{{ "last 7 days" if days == 7 else "last 30 days" }}</small></div>
+  <div class="stat-card"><span class="stat-icon stat-icon-mint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4-7-10a4 4 0 0 1 7-2.7A4 4 0 0 1 19 10c0 6-7 10-7 10Z"/></svg></span><span class="stat-label">Most common emotion</span><strong class="stat-emotion">{% if entry_count %}{{ emotion_counts.items()|sort(attribute='1', reverse=true)|first|first|title }}{% else %}—{% endif %}</strong><small>from your saved entries</small></div>
+  <div class="stat-card"><span class="stat-icon stat-icon-peach" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.25V5M4 19.25h16"/><path d="m7 15 3-3 3 2 5-6"/></svg></span><span class="stat-label">Daily sentiment</span><strong>{% if average_sentiment is not none %}{{ "%+.2f"|format(average_sentiment) }}{% else %}—{% endif %}</strong><small>average for days with entries</small></div>
+</section>
+<section class="charts-grid">
+  <article class="chart-card trend-card"><div class="chart-heading"><div><span class="eyebrow">OVER TIME</span><h2>Daily sentiment</h2></div><span class="chart-key"><i></i> Average score</span></div><p class="chart-subtitle">A simple signal across the days you wrote.</p><div class="trend-chart-container"><canvas id="sentiment-chart" aria-label="Daily average sentiment chart" role="img"></canvas></div><div class="chart-scale"><span>−1 lower</span><span>0</span><span>+1 higher</span></div></article>
+  <article class="chart-card emotion-card"><div class="chart-heading"><div><span class="eyebrow">WHAT SHOWED UP</span><h2>Emotions in your entries</h2></div></div><p class="chart-subtitle">A count of the top emotion in each check-in.</p><div class="donut-area"><div class="donut-chart-container"><canvas id="emotion-chart" aria-label="Emotion count doughnut chart" role="img"></canvas>{% if not entry_count %}<div class="donut-empty">No entries<br>yet</div>{% endif %}</div><div class="emotion-legend" id="emotion-legend"></div></div></article>
+</section>
+<section class="insights-section">
+  <div class="insights-heading"><div><span class="eyebrow">GENTLE OBSERVATIONS</span><h2>What your entries show.</h2></div><span class="rule-based-badge"><span></span>Based on simple patterns</span></div>
+  <div class="insight-list">{% for insight in insights %}<article class="insight-item"><span class="insight-number">0{{ loop.index }}</span><p>{{ insight }}</p></article>{% endfor %}</div>
+</section>
+<section class="demo-data-panel"><div><span class="eyebrow">FOR A CLASS DEMO</span><h3>Need something to show?</h3><p>Add a month of sample entries to see the charts in action. Existing entries stay untouched.</p></div><form action="{{ url_for('load_demo_data') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="button button-secondary" type="submit">Load demo data</button></form></section>
+<script id="chart-data" type="application/json">{{ {"labels": labels, "averages": averages, "emotions": emotion_counts}|tojson }}</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{
+  "name": "MindTrack",
+  "description": "A private daily journal with emotion scoring and sentiment trends.",
+  "keywords": [
+    "flask",
+    "journal",
+    "python"
+  ],
+  "stack": "heroku-24",
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "SESSION_SECRET": {
+      "description": "A random secret used to sign Flask sessions.",
+      "generator": "secret"
+    },
+    "COOKIE_SECURE": {
+      "description": "Require secure session cookies over HTTPS.",
+      "value": "1"
+    },
+    "HF_API_TOKEN": {
+      "description": "Optional Hugging Face token for emotion scoring.",
+      "required": false
+    }
+  }
+}

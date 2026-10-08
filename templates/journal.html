@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Journal · MindTrack{% endblock %}
+{% block content %}
+<section class="page-heading journal-heading">
+  <div><span class="eyebrow">YOUR DAILY CHECK-IN</span><h1>Make space for today.</h1><p>There’s no right way to write. Start wherever you are.</p></div>
+  <div class="date-pill"><span class="date-dot"></span>{{ current_date.strftime("%A, %B %-d") }}</div>
+</section>
+{% if result and result.used_demo and not demo_mode %}
+<div class="inline-notice"><span class="status-dot"></span>Emotion scoring is temporarily in demo mode because the model could not be reached.</div>
+{% endif %}
+<section class="journal-layout">
+  <div class="journal-main">
+    <form class="writing-card" method="post" action="{{ url_for('save_entry') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label class="writing-label" for="entry-text">What’s on your mind?</label>
+      <textarea id="entry-text" name="text" maxlength="3000" required placeholder="The day felt like…&#10;&#10;Take a breath, then write what feels true.">{{ result.entry.text if result else "" }}</textarea>
+      <div class="writing-footer"><span class="writing-hint">Just for you. Take your time.</span><span class="character-count" id="character-count">0 / 3,000</span></div>
+      <div class="writing-actions"><span class="small-lock"><span aria-hidden="true">⌑</span> Private to your account</span><button class="button button-primary" type="submit">Save check-in <span aria-hidden="true">→</span></button></div>
+    </form>
+    {% if result %}
+    <section class="result-card" aria-live="polite">
+      <div class="result-header"><div><span class="eyebrow">A LITTLE REFLECTION</span><h2>Your check-in, noticed.</h2></div><span class="result-saved">Saved just now</span></div>
+      <div class="result-overview">
+        <div class="emotion-result"><span class="emotion-label">Top emotion</span><strong class="emotion-name emotion-{{ result.emotion }}">{{ result.emotion|title }}</strong></div>
+        <div class="sentiment-result"><span class="emotion-label">Sentiment</span><strong class="sentiment-value sentiment-{{ result.sentiment_label|lower }}">{{ result.sentiment_label }}</strong><span class="sentiment-number">{{ "%+.2f"|format(result.entry.sentiment_score) }}</span></div>
+      </div>
+      <div class="score-chart-wrap"><div class="score-chart-title"><strong>Emotion scores</strong><span>Based on this entry</span></div><div class="score-bars">
+        {% for emotion, score in result.scores.items() %}
+        <div class="score-row"><span>{{ emotion|title }}</span><div class="score-track"><span class="score-fill emotion-fill-{{ emotion }}" style="width: {{ (score * 100)|round(1) }}%"></span></div><span class="score-value">{{ (score * 100)|round|int }}%</span></div>
+        {% endfor %}
+      </div></div>
+    </section>
+    {% if result.support %}
+    <section class="support-card" role="alert">
+      <div class="support-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-8-4.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M8.5 12h2l1-2.5 1.5 5 1-2.5h1.5"/></svg></div>
+      <div class="support-copy"><span class="eyebrow">YOU DON’T HAVE TO HANDLE THIS ALONE</span><h2>We’re glad you shared this.</h2><p>If things feel difficult right now, consider reaching out to someone you trust or a support service. If you may be in immediate danger, contact local emergency services.</p>
+        <div class="helpline-list">{% for line in helplines %}<a class="helpline-row" href="tel:{{ line.phone|replace(' ', '') }}"><span><strong>{{ line.name }}</strong><small>{{ line.description }}</small></span><b>{{ line.phone }} <span aria-hidden="true">↗</span></b></a>{% endfor %}</div>
+        <p class="support-note">This check-in is not a diagnosis. You deserve support from a qualified person.</p>
+      </div>
+    </section>
+    {% endif %}
+    {% endif %}
+  </div>
+  <aside class="journal-aside">
+    <div class="aside-card gentle-card"><span class="aside-art" aria-hidden="true"><span class="art-circle"></span><span class="art-wave"></span></span><span class="eyebrow">A GENTLE REMINDER</span><h3>There’s no mood you need to earn.</h3><p>Whatever showed up today is okay to notice.</p></div>
+    <a class="aside-card history-teaser" href="{{ url_for('history') }}"><span class="teaser-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 9"/><path d="M4.5 5.5V9h3.5M12 8v4l2.7 1.7"/></svg></span><span><strong>Look back gently</strong><small>Visit your past check-ins</small></span><span class="arrow">→</span></a>
+    {% if recent_entry and not result %}
+    <div class="aside-card last-checkin"><span class="eyebrow">LAST CHECK-IN</span><strong>{{ recent_entry.created_at.strftime("%b %-d") }}</strong><span class="emotion-chip emotion-chip-{{ recent_entry.emotion }}">{{ recent_entry.emotion|title }}</span><p>{{ recent_entry.text[:120] }}{% if recent_entry.text|length > 120 %}…{% endif %}</p></div>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}
+{% block head %}<script defer src="{{ url_for('static', filename='journal.js') }}"></script>{% endblock %}

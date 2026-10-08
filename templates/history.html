@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Past entries · MindTrack{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><span class="eyebrow">YOUR JOURNAL</span><h1>Past check-ins.</h1><p>A record of the days you took a moment for yourself.</p></div>
+  <a class="button button-secondary" href="{{ url_for('journal') }}">Write an entry <span aria-hidden="true">→</span></a>
+</section>
+{% if entries %}
+<div class="history-summary"><span class="summary-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 9"/><path d="M4.5 5.5V9h3.5M12 8v4l2.7 1.7"/></svg></span><span><strong>{{ entries|length }} check-in{{ "" if entries|length == 1 else "s" }} so far</strong><small>Your history is private to your account.</small></span></div>
+<div class="entry-list">
+  {% for entry in entries %}
+  <article class="entry-card">
+    <div class="entry-meta"><time datetime="{{ entry.created_at.isoformat() }}">{{ entry.created_at.strftime("%A, %B %-d · %-I:%M %p") }}</time>{% if entry.is_demo %}<span class="demo-tag">Example</span>{% endif %}<span class="emotion-chip emotion-chip-{{ entry.emotion }}">{{ entry.emotion|title }}</span><span class="sentiment-mini sentiment-{{ "positive" if entry.sentiment_score > 0.2 else "negative" if entry.sentiment_score < -0.2 else "neutral" }}">{{ "Positive" if entry.sentiment_score > 0.2 else "Negative" if entry.sentiment_score < -0.2 else "Neutral" }}</span>
+      <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" method="post" onsubmit="return confirm('Delete this journal entry? This cannot be undone.');"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="delete-button" aria-label="Delete entry from {{ entry.created_at.strftime('%B %-d') }}" title="Delete entry"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15M9 7V4.5h6V7m-8 0 .8 12h8.4L17 7M10 10.5v5.5m4-5.5v5.5"/></svg></button></form>
+    </div>
+    <p class="entry-text">{{ entry.text }}</p>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<section class="empty-state"><div class="empty-art" aria-hidden="true"><span></span><span></span><span></span></div><span class="eyebrow">A FRESH PAGE</span><h2>Your story starts here.</h2><p>Your saved check-ins will be here whenever you want to look back.</p><a class="button button-primary" href="{{ url_for('journal') }}">Write your first entry <span aria-hidden="true">→</span></a></section>
+{% endif %}
+{% endblock %}

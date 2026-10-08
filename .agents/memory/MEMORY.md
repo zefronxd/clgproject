@@ -1,0 +1,2 @@
+- [Flask workflow routing](flask-workflow-routing.md) — Add the validated root port mapping after workflow configuration; restarting can remove it.
+- [Python package install manifests](python-package-install.md) — Check for duplicate bare requirements after installing already-declared packages.

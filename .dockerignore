@@ -1,0 +1,9 @@
+.git
+.venv
+__pycache__/
+*.py[cod]
+instance/
+node_modules/
+artifacts/
+attached_assets/
+.env*

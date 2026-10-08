@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ "Create your space" if mode == "signup" else "Welcome back" }} · MindTrack{% endblock %}
+{% block auth_content %}
+<main class="auth-page">
+  <section class="auth-story">
+    <a class="brand auth-brand" href="{{ url_for('login') }}">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 6.5c-7.5 0-13.5 6-13.5 13.5S12.5 33.5 20 33.5 33.5 27.5 33.5 20 27.5 6.5 20 6.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M12 21c2.4 0 2.4-4.8 4.8-4.8s2.4 7.6 4.8 7.6 2.4-4.8 6.4-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+      <span><strong>mindtrack</strong><small>your daily space</small></span>
+    </a>
+    <div class="story-copy">
+      <span class="eyebrow">A MOMENT FOR YOU</span>
+      <h1>A softer place to meet yourself.</h1>
+      <p>Put the day into words. Notice how you feel. Let the little moments add up.</p>
+      <div class="story-illustration" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="sun-disc"><span class="sun-core"></span></div>
+        <span class="leaf leaf-one"></span><span class="leaf leaf-two"></span><span class="leaf leaf-three"></span>
+        <div class="ground-line"></div>
+      </div>
+    </div>
+    <p class="story-foot">Your journal belongs to you.</p>
+  </section>
+  <section class="auth-form-wrap">
+    <div class="auth-form">
+      <span class="eyebrow">{{ "GET STARTED" if mode == "signup" else "YOUR SPACE IS HERE" }}</span>
+      <h2>{{ "Create your space" if mode == "signup" else "Welcome back" }}</h2>
+      <p class="auth-subtitle">{{ "A private journal, just for you." if mode == "signup" else "Pick up where you left off." }}</p>
+      <form method="post" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <label for="username">Username</label>
+        <input id="username" name="username" autocomplete="username" required minlength="3" maxlength="50" placeholder="Your username">
+        {% if mode == "signup" %}<small class="field-hint">3–50 letters, numbers, dots, dashes, or underscores.</small>{% endif %}
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}" required {% if mode == "signup" %}minlength="8"{% endif %} placeholder="{{ 'At least 8 characters' if mode == 'signup' else 'Your password' }}">
+        <button class="button button-primary auth-submit" type="submit">{{ "Create account" if mode == "signup" else "Log in" }} <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="auth-switch">{% if mode == "signup" %}Already have a space? <a href="{{ url_for('login') }}">Log in</a>{% else %}New to MindTrack? <a href="{{ url_for('signup') }}">Create an account</a>{% endif %}</p>
+      <div class="privacy-promise"><span class="lock-mark" aria-hidden="true">⌑</span><span>Your entries are private to your account.</span></div>
+      <p class="auth-disclaimer">MindTrack is not a medical tool and not a substitute for professional help.</p>
+    </div>
+  </section>
+</main>
+{% endblock %}

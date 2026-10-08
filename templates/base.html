@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eff5f1">
+  <title>{% block title %}MindTrack{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {% if active_user %}
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{{ url_for('journal') }}" aria-label="MindTrack home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M20 6.5c-7.5 0-13.5 6-13.5 13.5S12.5 33.5 20 33.5 33.5 27.5 33.5 20 27.5 6.5 20 6.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M12 21c2.4 0 2.4-4.8 4.8-4.8s2.4 7.6 4.8 7.6 2.4-4.8 6.4-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <span><strong>mindtrack</strong><small>your daily space</small></span>
+      </a>
+      <div class="nav-caption">YOUR SPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link {% if request.endpoint in ['journal', 'save_entry'] %}is-active{% endif %}" href="{{ url_for('journal') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.75h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1Z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span>Journal</span>
+        </a>
+        <a class="nav-link {% if request.endpoint in ['chat', 'chat_api'] %}is-active{% endif %}" href="{{ url_for('chat') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.75A2.75 2.75 0 0 1 7.75 3h8.5A2.75 2.75 0 0 1 19 5.75v6.5A2.75 2.75 0 0 1 16.25 15H11l-4.5 3v-3.2A2.75 2.75 0 0 1 5 12.25Z"/><path d="M9 8h6M9 11h4"/></svg><span>Chat check-in</span>
+        </a>
+        <a class="nav-link {% if request.endpoint == 'dashboard' %}is-active{% endif %}" href="{{ url_for('dashboard') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.25V5M4 19.25h16"/><path d="m7 15 3-3 3 2 5-6"/></svg><span>Insights</span>
+        </a>
+        <a class="nav-link {% if request.endpoint in ['history', 'delete_entry'] %}is-active{% endif %}" href="{{ url_for('history') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 9"/><path d="M4.5 5.5V9h3.5M12 8v4l2.7 1.7"/></svg><span>Past entries</span>
+        </a>
+      </nav>
+      <div class="sidebar-note">
+        <span class="note-spark" aria-hidden="true"></span>
+        <p>A small check-in is still a check-in.</p>
+      </div>
+      <div class="profile-row">
+        <span class="avatar">{{ active_user.username[:1]|upper }}</span>
+        <span class="profile-name"><strong>{{ active_user.username }}</strong><small>Your private space</small></span>
+        <form action="{{ url_for('logout') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="icon-button logout-button" type="submit" aria-label="Log out" title="Log out">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5.75a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1H10M14 8l4 4-4 4M18 12H9"/></svg>
+          </button>
+        </form>
+      </div>
+    </aside>
+    <main class="main-content">
+      <header class="mobile-header">
+        <a class="brand" href="{{ url_for('journal') }}"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 6.5c-7.5 0-13.5 6-13.5 13.5S12.5 33.5 20 33.5 33.5 27.5 33.5 20 27.5 6.5 20 6.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M12 21c2.4 0 2.4-4.8 4.8-4.8s2.4 7.6 4.8 7.6 2.4-4.8 6.4-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><strong>mindtrack</strong></a>
+        <form action="{{ url_for('logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="text-button" type="submit">Log out</button></form>
+      </header>
+      <div class="mobile-nav">
+        <a class="{% if request.endpoint in ['journal', 'save_entry'] %}is-active{% endif %}" href="{{ url_for('journal') }}">Journal</a>
+        <a class="{% if request.endpoint in ['chat', 'chat_api'] %}is-active{% endif %}" href="{{ url_for('chat') }}">Chat</a>
+        <a class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}" href="{{ url_for('dashboard') }}">Insights</a>
+        <a class="{% if request.endpoint in ['history', 'delete_entry'] %}is-active{% endif %}" href="{{ url_for('history') }}">History</a>
+      </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-stack" role="status">
+          {% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}
+        </div>
+        {% endif %}
+      {% endwith %}
+      {% if demo_mode %}
+      <div class="mode-notice">
+        <span class="status-dot"></span>
+        <span><strong>Demo mode</strong> — using on-device keyword scoring. Add <code>HF_API_TOKEN</code> to enable Hugging Face emotion scoring.</span>
+      </div>
+      {% endif %}
+      <div class="disclaimer-banner">MindTrack is not a medical tool and not a substitute for professional help.</div>
+      {% block content %}{% endblock %}
+      <footer class="site-footer">
+        <span>MindTrack is not a medical tool and not a substitute for professional help.</span>
+        {% if not demo_mode %}<span>With emotion scoring enabled, entry text is sent to Hugging Face for analysis.</span>{% endif %}
+      </footer>
+    </main>
+  </div>
+  {% else %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}<div class="auth-flash">{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block auth_content %}{% endblock %}
+  {% endif %}
+</body>
+</html>

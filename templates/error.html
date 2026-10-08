@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · MindTrack{% endblock %}
+{% block content %}
+{% if active_user %}
+<section class="empty-state error-state"><span class="eyebrow">A SMALL DETOUR</span><h1>{{ title }}</h1><p>{{ message }}</p><a class="button button-primary" href="{{ url_for('journal') if active_user else url_for('login') }}">Back to MindTrack</a></section>
+{% endif %}
+{% endblock %}
+{% block auth_content %}
+{% if not active_user %}
+<main class="auth-page"><section class="auth-form-wrap"><div class="auth-form"><span class="eyebrow">A SMALL DETOUR</span><h2>{{ title }}</h2><p class="auth-subtitle">{{ message }}</p><a class="button button-primary" href="{{ url_for('login') }}">Back to MindTrack</a><p class="auth-disclaimer">MindTrack is not a medical tool and not a substitute for professional help.</p></div></section></main>
+{% endif %}
+{% endblock %}
